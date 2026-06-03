@@ -90,8 +90,11 @@ For an already saved article:
 - Use the idempotent `PUT` method.
 - Saves are applied with a single conditional atomic update that only pushes the article when it isn't already present:
 
-```js db.users.updateOne( { _id: userId, "savedArticles.articleId": { $ne: articleId } }, { $push: { savedArticles: { articleId, savedAt } } } )
-
+```js
+db.users.updateOne(
+  { _id: userId, "savedArticles.articleId": { $ne: articleId } },
+  { $push: { savedArticles: { articleId, savedAt } } },
+);
 ```
 
 ### Schema (NoSQL)
