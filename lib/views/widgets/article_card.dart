@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../controllers/article_bloc.dart';
 import '../../models/article_model.dart';
 
 class ArticleCard extends StatelessWidget {
@@ -45,16 +47,51 @@ class ArticleCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Tooltip(
-              message: 'Save',
-              child: IconButton(
-                icon: const Icon(Icons.bookmark_border),
-                onPressed: () {},
-              ),
-            ),
+            _SaveButton(articleId: article.id),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SaveButton extends StatelessWidget {
+  final String articleId;
+  const _SaveButton({required this.articleId});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ArticleBloc, ArticleState>(
+      buildWhen: (prev, curr) =>
+          prev.statusOf(articleId) != curr.statusOf(articleId),
+      builder: (context, state) {
+        final status = state.statusOf(articleId);
+        if (status == SaveStatus.saving) {
+          return const SizedBox(
+            width: 48,
+            height: 48,
+            child: Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        }
+        final saved = status == SaveStatus.success;
+        return Tooltip(
+          message: saved ? 'Saved' : 'Save',
+          child: IconButton(
+            icon: Icon(saved ? Icons.bookmark : Icons.bookmark_border),
+            onPressed: saved
+                ? null
+                : () => context
+                    .read<ArticleBloc>()
+                    .add(ArticleSaveRequested(articleId)),
+          ),
+        );
+      },
     );
   }
 }
