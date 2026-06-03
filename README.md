@@ -47,3 +47,94 @@ Optional — analyze the code:
 ```bash
 flutter analyze
 ```
+
+## Part II: API design
+
+### Endpoint
+
+**HTTP Method:** `PUT`
+
+**Path:**
+
+```http
+PUT /users/{userId}/saved-articles/{articleId}
+```
+
+**Request Body:** None required.
+
+**Response:**
+
+For a newly saved article:
+
+```http
+201 Created
+Location: /users/42/saved-articles/456
+```
+
+```json
+{
+  "userId": "42",
+  "articleId": "456",
+  "savedAt": "2026-06-03T10:00:00Z"
+}
+```
+
+For an already saved article:
+
+```http
+200 OK
+```
+
+### Deduplication
+
+- Use the idempotent `PUT` method.
+- Enforce a unique constraint on `(userId, articleId)` to prevent duplicate saves, including concurrent requests.
+
+### Schema (NoSQL)
+
+**articles collection**
+
+```json
+{
+  "_id": "articleId",
+  "title": "string",
+  "author": "string",
+  "publishedAt": "date",
+  "preview": "string",
+  "body": "string"
+}
+```
+
+**users collection**
+
+```json
+{
+  "_id": "userId",
+  "email": "string",
+  "passwordHash": "string",
+  "savedArticles": [
+    {
+      "articleId": "articleId",
+      "savedAt": "date"
+    }
+  ]
+}
+```
+
+A NoSQL document model is suitable because saved articles are user-specific data that can be embedded within the user document for simple retrieval and updates.
+
+### Edge Case
+
+If the article has been deleted before the save request is processed:
+
+```http
+404 Not Found
+```
+
+```json
+{
+  "error": "Article not found or no longer available"
+}
+```
+
+No saved article record should be created.
