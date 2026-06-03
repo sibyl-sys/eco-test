@@ -148,12 +148,12 @@ No saved article record should be created.
 
 ## Part III: Your Thinking
 
-- What state management approach did you use, and why? What would you choose
-  for a large existing codebase vs. a greenfield project?
+- _What state management approach did you use, and why? What would you choose
+  for a large existing codebase vs. a greenfield project?_
   - I used bloc pattern for maintainability, readability and testability. Normally without AI, with smaller projects like this, it is acceptable to use Riverpod or Provider but with the emerging technology of tools like coding agents, the learning curve of BLoC becomes more shallow. Given this, both large existing codebase and a greenfield project should use bloc for maintainability and testability.
-- What assumptions did you make that you'd normally clarify with the team first?
+- _What assumptions did you make that you'd normally clarify with the team first?_
   - I would usually clarify with the designs first as those are important but I had to assume a minimalist design as the UI/UX requirements were not provided. I also assumed that refactoring is allowed to improve code readability and maintainability.
-- What did you cut from your implementation, and why?
+- _What did you cut from your implementation, and why?_
   - I believe I was actually able to implement all of the requirements as I was allowed to use AI normally. The use of this emerging agentic allows for more planning and less coding. I was even able to squeeze in adaptive views and dark mode.
-- What would you add or change with another hour?
+- _What would you add or change with another hour?_
   - I would probably add the ability to unsave an article if given another hour.
