@@ -5,6 +5,8 @@ import '../data/api_service.dart';
 import '../data/sample_data.dart';
 import 'widgets/article_card.dart';
 
+const double _maxContentWidth = 700;
+
 class ArticleScreen extends StatelessWidget {
   const ArticleScreen({super.key});
 
@@ -13,7 +15,20 @@ class ArticleScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => ArticleBloc(MockArticleApi()),
       child: Scaffold(
-        appBar: AppBar(title: const Text('For You')),
+        appBar: AppBar(
+          titleSpacing: 0,
+          title: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: _maxContentWidth),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                alignment: Alignment.centerLeft,
+                child: const Text('For You'),
+              ),
+            ),
+          ),
+        ),
         body: BlocListener<ArticleBloc, ArticleState>(
           listenWhen: (prev, curr) =>
               curr.feedback != null && curr.feedback != prev.feedback,
@@ -28,12 +43,17 @@ class ArticleScreen extends StatelessWidget {
                     : null,
               ));
           },
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: mockArticles.length,
-            itemBuilder: (context, index) {
-              return ArticleCard(article: mockArticles[index]);
-            },
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: _maxContentWidth),
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: mockArticles.length,
+                itemBuilder: (context, index) {
+                  return ArticleCard(article: mockArticles[index]);
+                },
+              ),
+            ),
           ),
         ),
       ),
