@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../controllers/article_bloc.dart';
+import '../controllers/theme_bloc.dart';
 import '../data/api_service.dart';
 import '../data/sample_data.dart';
 import 'widgets/article_card.dart';
@@ -12,19 +13,45 @@ class ArticleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     return BlocProvider(
       create: (_) => ArticleBloc(MockArticleApi()),
       child: Scaffold(
         appBar: AppBar(
           titleSpacing: 0,
+          surfaceTintColor: Colors.transparent,
+          backgroundColor: WidgetStateColor.resolveWith(
+            (states) {
+              if (!states.contains(WidgetState.scrolledUnder)) {
+                return colorScheme.surface;
+              }
+              return isDark
+                  ? colorScheme.surfaceContainerHighest
+                  : colorScheme.surfaceContainerLowest;
+            },
+          ),
           title: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: _maxContentWidth),
-              child: Container(
-                width: double.infinity,
+              child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                alignment: Alignment.centerLeft,
-                child: const Text('For You'),
+                child: Row(
+                  children: [
+                    const Expanded(child: Text('For You')),
+                    IconButton(
+                      tooltip:
+                          isDark ? 'Switch to light mode' : 'Switch to dark mode',
+                      icon: Icon(isDark
+                          ? Icons.light_mode_outlined
+                          : Icons.dark_mode_outlined),
+                      onPressed: () => context
+                          .read<ThemeBloc>()
+                          .add(ThemeToggled(Theme.of(context).brightness)),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
