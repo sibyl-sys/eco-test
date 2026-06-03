@@ -88,7 +88,11 @@ For an already saved article:
 ### Deduplication
 
 - Use the idempotent `PUT` method.
-- Enforce a unique constraint on `(userId, articleId)` to prevent duplicate saves, including concurrent requests.
+- Saves are applied with a single conditional atomic update that only pushes the article when it isn't already present:
+
+```js db.users.updateOne( { _id: userId, "savedArticles.articleId": { $ne: articleId } }, { $push: { savedArticles: { articleId, savedAt } } } )
+
+```
 
 ### Schema (NoSQL)
 
